@@ -4,6 +4,7 @@ This script allows the user to:
 
 -Initializes a Sqlite database
 -Creates a database model called Product
+-Creates a database model called Brand
 -Connect the database and create tables
 -Reads in the existing CSV data
 -Cleans up the data before adding each product from the csv
@@ -60,22 +61,22 @@ def menu():
     while True:
         print(
             '''
-            Store Inventory
+            Grocery Store Inventory
 
             \n* View a single product\'s inventory(v)
-            \r*Add a new product to the database (a)
+            \r*Add a new product to the database (n)
+            \r*View an Analysis(a)
             \r*Make a backup of the entire inventory(b)
 
             ''')
         choice = input('What would you like to do?: ')
-        if choice in ['v', 'a', 'b']:
+        if choice in ['v','n', 'a', 'b']:
             return choice
         else:
             input(
                 '''
                 \rPlease enter one of the options above
 
-                \rletters a, b or v only
 
                 \rPress enter to try again:''')
         print()
@@ -95,6 +96,7 @@ def view_product():
                       Product Quantity:{product.product_quantity} units
                       Product Price:${product.product_price/100:.2f}
                       Date last updated:{product.date_updated}
+                      Brand: 
               '''
                       )
         if product_id > len(session.query(Product).all()):
