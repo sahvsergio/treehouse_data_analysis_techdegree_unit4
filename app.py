@@ -45,7 +45,7 @@ import time
 
 
 # Related third-party imports
-from models import Base, session, Product, engine
+from models import Base, session, Product,Brand, engine
 
 
 
@@ -274,6 +274,24 @@ def add_csv():
                         session.commit()
                         print('the following changes have been made:')
                         print(product_in_db.product_price)
+
+                        
+    with open('brands.csv') as brands_csv:
+        data2=csv.DictReader(brands_csv)
+        for row in data2:
+            brand_in_db = session.query(Brand).\
+                filter(Product.product_name == row['brand_name']).\
+                one_or_none()
+            if brand_in_db is None:
+                brand_name = row['brand_name']
+                
+                new_brand = Brand(brand_name=brand_name)
+                session.add(new_brand)
+            session.commit()
+            if brand_in_db is not None:
+                brand_in_db.brand_name=row['brand_name']
+                session.commit()
+
 
     print('database is up-to-date')
 
