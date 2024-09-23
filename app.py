@@ -295,15 +295,19 @@ def app():
         if choice == 'v':
             # view a single product
             view_product()
-
         elif choice == 'a':
+            pass
+            
+            #analyze()
+
+        elif choice == 'n':
             # add a product
             add_product()
 
         elif choice == 'b':
             # create backup
             create_backup()
-            pass
+            
         else:
             app_running = False
             input(
