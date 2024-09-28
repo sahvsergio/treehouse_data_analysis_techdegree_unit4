@@ -23,7 +23,7 @@ session = Session()
 # Create your database model called Product
 class Product(Base):
 
-    __tablename__ = 'products'
+    __tablename__ = 'Products'
 
     # Attributes
     # Product_id=Primary_key,
@@ -37,9 +37,9 @@ class Product(Base):
     product_quantity = Column('Product Quantity', Integer)
     product_price = Column('Product Price', Integer)
     date_updated = Column('Date Updated', Date, default=datetime.datetime.now)
-    brand_id=Column('brand_id', ForeignKey("Brands.Brand Id"))
+    brand_id=Column('brand_id', ForeignKey('Brands.brand_id'))
 
-    
+
     def __repr__(self) -> str:
         ...
         return f"'Product Name:{self.product_name},\
@@ -49,14 +49,13 @@ class Product(Base):
 
 class Brand(Base):
     __tablename__='Brands'
-    brand_id = Column('Brand Id', Integer, primary_key=True)
-    
-    brand_name = Column('Brand Name', String)
-    product=relationship("Product")
+    brand_id = Column(Integer, primary_key=True)
+
+    brand_name = Column( String)
+
 
 
     def __repr__(self)->str:
         pass
-    
 
-        
+
