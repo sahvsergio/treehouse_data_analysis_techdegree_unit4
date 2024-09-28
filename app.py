@@ -36,8 +36,7 @@ def clean_price(price_str):
     return int(price_float * 100)
 
 
-
-#loading function
+# loading function
 def add_csv():
     # open brands_file
     with open('brands.csv') as brands_file:
@@ -61,18 +60,13 @@ def add_csv():
             # if database has any content
             if brand_in_db is not None:
                 # if brand names in database are equal to  the ones in csv file
-                if brand_in_db.brand_name==brand['brand_name']:
+                if brand_in_db.brand_name == brand['brand_name']:
                     print('This brand was already existing in the database')
-                #brand names are not equal to the database
+                # brand names are not equal to the database
                 else:
-                    new_brand=Brand(brand_name=brand['brand_name'])
+                    new_brand = Brand(brand_name=brand['brand_name'])
                     session.add(new_brand)
                 session.commit()
-
-
-
-
-
 
     with open('inventory.csv') as inventory_file:
         products = csv.DictReader(inventory_file)
@@ -87,7 +81,7 @@ def add_csv():
             for brand in brand_in_db:
                 if brand.brand_name == product['brand_name']:
                     product_brand_id = brand.brand_id
-                    new_product=Product(
+                    new_product = Product(
                         product_name=product_name,
                         product_price=product_price,
                         product_quantity=product_quantity,
@@ -98,7 +92,9 @@ def add_csv():
 
                 session.commit()
 
-#menu
+# menu
+
+
 def menu():
     '''
     Menu
@@ -142,7 +138,7 @@ def view_product():
             for product in desired_product:
                 brand_in_db = session.query(Brand).\
                     all()
-                    
+
                 for brand in brand_in_db:
                     if brand.brand_id == product.brand_id:
                         print(f'''
@@ -152,7 +148,7 @@ def view_product():
                               Date last updated:{product.date_updated}
                               Brand:{brand.brand_name}
               '''
-                      )
+                              )
         if product_id > len(session.query(Product).all()):
             raise Exception('This  product id is not valid, please try again ')
 
@@ -190,8 +186,7 @@ def add_product():
         print(e)
         product_price = input('Please enter the price for the product')
         transformed_price = clean_price(product_price)
-    brand_name=input('Please enter a brand name')
-    
+    brand_name = input('Please enter a brand name')
 
     product_in_db = session.query(Product).\
         filter(Product.product_name == product_name).\
@@ -202,11 +197,10 @@ def add_product():
             filter(Brand.brand_name == brand_name).\
             one_or_none()
         if brand_in_db is None:
-            new_brand=Brand(brand_name=brand_name)
+            new_brand = Brand(brand_name=brand_name)
             session.add(new_brand)
         session.commit()
-        
-       
+
         added_product = Product(
             product_name=product_name,
             product_quantity=product_quantity,
@@ -214,24 +208,15 @@ def add_product():
             brand_id=new_brand.brand_id)
         session.add(added_product)
     session.commit()
-       
-            
-                  
-        
-                
+
     if product_in_db is not None:
         print('Product already in the system, updating with new details')
         product_in_db.product_price = clean_price(product_price)
         product_in_db.product_quantity = clean_quantity(product_quantity)
         product_in_db.date_updated = datetime.datetime.now()
-        product_in_db.brand_id=product_in_db.brand_id
+        product_in_db.brand_id = product_in_db.brand_id
 
         session.commit()
-
-
-
-
-
 
 
 def app():
@@ -272,7 +257,6 @@ def app():
                 \rPress enter to try again:
                 ''')
         print('Thank you for using our system, good bye ')
-
 
     # sys.exit()
 
