@@ -199,21 +199,33 @@ def add_product():
     # if the product doesn't exist in the database
     if product_in_db is None:
         brand_in_db = session.query(Brand).\
-            all()
-        for brand in brand_in_db:
-            if brand_name not in brand.name:
-                product_added = Product(
-                    product_name=product_name,
-                    product_quantity=product_quantity,
-                                product_price=transformed_price,
-                                )
-        session.add(product_added)
+            filter(Brand.brand_name == brand_name).\
+            one_or_none()
+        if brand_in_db is None:
+            new_brand=Brand(brand_name=brand_name)
+            session.add(new_brand)
         session.commit()
-    elif product_in_db is not None:
+        
+       
+        added_product = Product(
+            product_name=product_name,
+            product_quantity=product_quantity,
+            product_price=product_price,
+            brand_id=new_brand.brand_id)
+        session.add(added_product)
+    session.commit()
+       
+            
+                  
+        
+                
+    if product_in_db is not None:
         print('Product already in the system, updating with new details')
         product_in_db.product_price = clean_price(product_price)
         product_in_db.product_quantity = clean_quantity(product_quantity)
         product_in_db.date_updated = datetime.datetime.now()
+        product_in_db.brand_id=product_in_db.brand_id
+
         session.commit()
 
 
