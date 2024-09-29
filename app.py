@@ -3,7 +3,7 @@ import datetime
 import os
 import sys
 import time
-
+from  statistics import mode
 
 # Related third-party imports
 from models import Base, session, Product, Brand, engine
@@ -217,7 +217,107 @@ def add_product():
         product_in_db.brand_id = product_in_db.brand_id
 
         session.commit()
+    time.sleep(2)
+    print('returning to main menu')
+    time.sleep(2)
 
+def view_analysis():
+    price_list=[]
+    list_of_brands=[]
+    products =session.query(Product).all()
+    for product in products:
+        product_price=product.product_price
+        price_list.append(product_price)
+        product_brand=product.brand_id
+        list_of_brands.append(product_brand)
+    max_price=max(price_list)
+    min_price=min(price_list)
+    brand_mode=mode(list_of_brands)
+    
+   
+    
+    for product in products:
+        if product.product_price==max_price:
+           highest_product= product.product_name
+        if product.product_price==min_price:
+            lowest_product=product.product_name
+    repeat_brand=session.query(Brand).\
+        filter(Brand.brand_id == brand_mode).\
+        one_or_none()
+    
+    
+        
+    print(f'''
+          DATABASE ANALYTICS BELOW 
+          
+          This is the most expensive  product in the database {highest_product} at ${max_price}
+          This is the least expensive product in the database: {lowest_product} at ${min_price}
+          This is the brand that has the most products in the database: {repeat_brand.brand_name}
+
+          ''')
+    time.sleep(2)
+    print('returning to main menu')
+    time.sleep(2)
+
+
+def create_backup():
+    "creates 2 backup files"
+    with open('backup_inventory.csv','w') as backup_inventory:
+        inventory_fields=[
+            'product_id',
+            'product_name',
+            'product_quantity',
+            'product_price',
+            'date_updated',
+            'brand_id'
+
+
+            ]
+        data=session.query(Product).all()
+        inventory_backer= csv.DictWriter(
+            backup_inventory, fieldnames=inventory_fields)
+        inventory_backer.writeheader()
+        for datum in data:
+            inventory_backer.writerow(
+                {
+                    'product_id': datum.product_id,
+                    'product_name': datum.product_name,
+                    'product_quantity': datum.product_quantity,
+                    'product_price': datum.product_price,
+                    'date_updated': datum.date_updated,
+                    'brand_id':datum.brand_id
+                }
+            )
+    with open('backup_brands.csv','w') as backup_brands:
+        brand_fields=[
+            'brand_id',
+            'brand_name'
+        ]
+        data=session.query(Brand).all()
+        brand_backer=csv.DictWriter(
+            backup_brands, fieldnames=brand_fields)
+        brand_backer.writeheader()
+        for datum in data:
+            brand_backer.writerow(
+                {
+                'brand_id': datum.brand_id,
+                'brand_name':datum.brand_name
+                }
+
+
+                )
+
+                
+        
+       
+            
+            
+        
+        
+
+    
+
+    
 
 def app():
     try:
@@ -236,7 +336,7 @@ def app():
             # view a single product
             view_product()
         elif choice == 'a':
-            pass
+            view_analysis()
 
             # analyze()
 
