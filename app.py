@@ -23,8 +23,22 @@ def clean_date(date_str):
 
 
 def clean_quantity(qty_str):
+    try:
+        if qty_str.isalpha():
+            raise Exception('This is not a number')
 
-    return int(qty_str)
+
+        else:
+            return int(qty_str)
+
+    except Exception as e:
+        print(e)
+
+
+
+
+
+
 
 
 def clean_price(price_str):
@@ -170,26 +184,33 @@ def view_product():
 
 
 def add_product():
-
     product_name = input('Please enter a product name')
-    try:
-        product_quantity = int(
-            input('''Please enter the quantity of the product'''))
-    except ValueError:
-        print('Please enter only whole numbers')
-        product_quantity = int(
-            input('Please enter the quantity of the product'))
-    try:
-        product_price = input('Please enter the price for the product')
-        transformed_price = clean_price(product_price)
-        if (transformed_price) != int:
-            raise Exception('Please enter a valid value for the  price ')
-    except Exception as e:
-        print(e)
-        product_price = input('Please enter the price for the product')
-        transformed_price = clean_price(product_price)
-    brand_name = input('Please enter a brand name')
 
+    while True:
+        try:
+            product_quantity = int(input('''Please enter the quantity of the product'''))
+
+
+        except ValueError:
+            print('Please enter a valid value for the quantity')
+        except Exception as e:
+            print(e)
+        else:
+            break
+    while True:
+        try:
+            product_price=input('Please enter the price for the unit')
+            if product_price.isalpha():
+                raise Exception('Please enter a number')
+            elif product_price.isnumeric():
+                product_price=clean_price(product_price)
+                break
+        except Exception as e:
+            print(e)
+        else:
+            break
+
+    brand_name = input('Please enter a brand name')
     product_in_db = session.query(Product).\
         filter(Product.product_name == product_name).\
         one_or_none()
@@ -222,7 +243,7 @@ def add_product():
     time.sleep(2)
     print('returning to main menu')
     time.sleep(2)
-
+    
 
 def view_analysis():
     price_list = []
@@ -296,20 +317,20 @@ def create_backup():
             'brand_id',
             'brand_name'
         ]
-        data = session.query(Brand).all()
+        brand_data = session.query(Brand).all()
         brand_backer = csv.DictWriter(
             backup_brands, fieldnames=brand_fields)
         brand_backer.writeheader()
-        for datum in data:
-            brand_backer.writerow
-            (
-                {
-                    'brand_id': datum.brand_id,
-                    'brand_name': datum.brand_name
-                }
+        for brand_datum in brand_data:
+            brand_backer.writerow(
 
-
+                {'brand_id': brand_datum.brand_id,
+                 'brand_name':brand_datum.brand_name
+                 }
                 )
+            
+            
+           
 
 
 def app():
