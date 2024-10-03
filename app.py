@@ -189,6 +189,8 @@ def add_product():
     while True:
         try:
             product_quantity = int(input('''Please enter the quantity of the product'''))
+            if product_quantity<=0:
+                raise Exception('Please enter a number higher than 0')
 
 
         except ValueError:
@@ -199,16 +201,20 @@ def add_product():
             break
     while True:
         try:
-            product_price=input('Please enter the price for the unit')
-            if product_price.isalpha():
-                raise Exception('Please enter a number')
-            elif product_price.isnumeric():
+            product_price=float(input('Please enter the price for the unit'))
+            if type(product_price)==str:
                 product_price=clean_price(product_price)
+            elif type(product_price)==float:
                 break
+            elif product_price<=0:
+                raise Exception('Price cannot be lower than 0')
+        except ValueError:
+            print('Please enter a number not a letter')
+        
+            
         except Exception as e:
             print(e)
-        else:
-            break
+        
 
     brand_name = input('Please enter a brand name')
     product_in_db = session.query(Product).\
