@@ -34,13 +34,6 @@ def clean_quantity(qty_str):
 
     except Exception as e:
         print(e)
-        
-
-
-
-
-
-
 
 
 def clean_price(price_str):
@@ -220,64 +213,19 @@ def add_product():
         
 
     brand_name = input('Please enter a brand name')
-    product_in_db = session.query(Product).\
-        filter(Product.product_name == product_name).\
-        one_or_none()
-    # if the product doesn't exist in the database
-    if product_in_db is None:
-        brand_in_db = session.query(Brand).\
-            filter(Brand.brand_name == brand_name).\
-            one_or_none()
-        if brand_in_db is not None:
-            # this works
-            print('Brand already in the system')
-            added_product = Product(
-                product_name=product_name,
-                product_quantity=product_quantity,
-                product_price=product_price,
-                brand_id=brand_in_db.brand_id)
-            session.add(added_product)
+    products_in_db=session.query(Product).all()
+    brands_in_db=session.query(Brand).all()
+    for product in products_in_db:
+        if product.product_name==product_name:
+            product.product_name=product_name
+            product.product_quantity=product_quantity
+            product.product_price=product_price
+            for brand in brands_in_db:
+                if brand.brand_name==brand_name:
+                    product.brand_id=brand.brand_id
+                    
         session.commit()
-        if brand_in_db is None:
-            # this works
-            print('This is a new brand in the system')
-            new_brand=Brand(brand_name=brand_name)
-            session.add(new_brand)
-        session.commit()
-        added_product=Product(
-                product_name=product_name,
-                product_quantity=product_quantity,
-                product_price=product_price,
-                brand_id=new_brand.brand_id
-                )
-    session.add(added_product)
-    session.commit()
             
-            
-            
-        
-
-        
-            
-        
-    
-   
-    
-    
-            
-
-    if product_in_db is not None:
-        print('Product already in the system, updating with new details')
-        product_in_db.product_price = clean_price(product_price)
-        product_in_db.product_quantity = clean_quantity(product_quantity)
-        product_in_db.date_updated = datetime.datetime.now()
-        product_in_db.brand_id = product_in_db.brand_id
-
-        session.commit()
-    time.sleep(2)
-    print('returning to main menu')
-    time.sleep(2)
-    
 
 def view_analysis():
     price_list = []
