@@ -24,8 +24,9 @@ def clean_date(date_str):
 
 def clean_quantity(qty_str):
     try:
-        if qty_str.isalpha():
-            raise Exception('This is not a number')
+        if type(qty_str)==str:
+            if qty_str.isalpha():
+                raise Exception('This is not a number')
 
 
         else:
@@ -33,6 +34,7 @@ def clean_quantity(qty_str):
 
     except Exception as e:
         print(e)
+        
 
 
 
@@ -42,9 +44,10 @@ def clean_quantity(qty_str):
 
 
 def clean_price(price_str):
-    if '$' in price_str:
-        split_price = price_str.split('$')
-        price_float = float(split_price[1])
+    if type(price_str)==str:
+        if '$' in price_str:
+            split_price = price_str.split('$')
+            price_float = float(split_price[1])
     else:
         price_float = float(price_str)
     return int(price_float * 100)
@@ -225,18 +228,43 @@ def add_product():
         brand_in_db = session.query(Brand).\
             filter(Brand.brand_name == brand_name).\
             one_or_none()
+        if brand_in_db is not None:
+            # this works
+            print('Brand already in the system')
+            added_product = Product(
+                product_name=product_name,
+                product_quantity=product_quantity,
+                product_price=product_price,
+                brand_id=brand_in_db.brand_id)
+            session.add(added_product)
+        session.commit()
         if brand_in_db is None:
-            new_brand = Brand(brand_name=brand_name)
+            # this works
+            print('This is a new brand in the system')
+            new_brand=Brand(brand_name=brand_name)
             session.add(new_brand)
         session.commit()
-
-        added_product = Product(
-            product_name=product_name,
-            product_quantity=product_quantity,
-            product_price=product_price,
-            brand_id=new_brand.brand_id)
-        session.add(added_product)
+        added_product=Product(
+                product_name=product_name,
+                product_quantity=product_quantity,
+                product_price=product_price,
+                brand_id=new_brand.brand_id
+                )
+    session.add(added_product)
     session.commit()
+            
+            
+            
+        
+
+        
+            
+        
+    
+   
+    
+    
+            
 
     if product_in_db is not None:
         print('Product already in the system, updating with new details')
