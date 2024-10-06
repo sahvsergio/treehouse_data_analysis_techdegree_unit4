@@ -212,18 +212,18 @@ def add_product():
     brand_name = input('Please enter a brand name')
     products_in_db = session.query(Product).all()
     brands_in_db = session.query(Brand).all()
-    if product_name in products_in_db:
-        
-        if product.product_name == product_name:
-            print('This product was found on the dataabase')
-            product.product_name = product_name
-            product.product_quantity = product_quantity
-            product.product_price = product_price
-            product.date_updated = datetime.datetime.now()
-        for brand in brands_in_db:
-            if brand.brand_name == brand_name:
-                brand_id=brand.brand_id
-            session.commit()
+    for product in products_in_db:
+        if product_name in products_in_db:
+            if product.product_name == product_name:
+                print('This product was found on the dataabase')
+                product.product_name = product_name
+                product.product_quantity = product_quantity
+                product.product_price = product_price
+                product.date_updated = datetime.datetime.now()
+            for brand in brands_in_db:
+                if brand.brand_name == brand_name:
+                    brand_id=brand.brand_id
+        session.commit()
        
     
 
