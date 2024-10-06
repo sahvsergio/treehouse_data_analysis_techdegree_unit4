@@ -212,6 +212,8 @@ def add_product():
     brand_name = input('Please enter a brand name')
     products_in_db = session.query(Product).all()
     brands_in_db = session.query(Brand).all()
+
+    #products with product name and brand already in the database
     for product in products_in_db:
         if product_name in products_in_db:
             if product.product_name == product_name:
@@ -222,29 +224,25 @@ def add_product():
                 product.date_updated = datetime.datetime.now()
             for brand in brands_in_db:
                 if brand.brand_name == brand_name:
-                    brand_id=brand.brand_id
+                    brand_id = brand.brand_id
         session.commit()
-       
-    
-
-
-    
-    if product_name not in products_in_db:
-        print('The product is new to the system')
-        for brand in brands_in_db:
-            if brand_name == brand.brand_name:
-                brand_id = brand.brand_id
-                break
+    #product  not on the database before and brand already in the database
+    for product in products_in_db:
+        if product_name not in products_in_db:
+            print('The product is new to the system')
     new_product = Product(
-        product_name=product_name,
-        product_price=product_price,
-        product_quantity=product_quantity,
-        date_updated=datetime.datetime.now(),
-        brand_id=brand_id
+    product_name=product_name,
+    product_price=product_price,
+    product_quantity=product_quantity,
+    date_updated=datetime.datetime.now(),
     )
     session.add(new_product)
     session.commit()
-    
+    for brand in brands_in_db:
+        if brand.brand_name==brand_name:
+            new_product.brand_id = brand.brand_id
+    session.commit()
+  
 
 
 def view_analysis():
