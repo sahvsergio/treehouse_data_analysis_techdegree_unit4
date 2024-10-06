@@ -24,10 +24,9 @@ def clean_date(date_str):
 
 def clean_quantity(qty_str):
     try:
-        if type(qty_str)==str:
+        if type(qty_str) == str:
             if qty_str.isalpha():
                 raise Exception('This is not a number')
-
 
         else:
             return int(qty_str)
@@ -37,7 +36,7 @@ def clean_quantity(qty_str):
 
 
 def clean_price(price_str):
-    if type(price_str)==str:
+    if type(price_str) == str:
         if '$' in price_str:
             split_price = price_str.split('$')
             price_float = float(split_price[1])
@@ -184,10 +183,10 @@ def add_product():
 
     while True:
         try:
-            product_quantity = int(input('''Please enter the quantity of the product'''))
-            if product_quantity<=0:
+            product_quantity = int(
+                input('''Please enter the quantity of the product'''))
+            if product_quantity <= 0:
                 raise Exception('Please enter a number higher than 0')
-
 
         except ValueError:
             print('Please enter a valid value for the quantity')
@@ -197,61 +196,56 @@ def add_product():
             break
     while True:
         try:
-            product_price=float(input('Please enter the price for the unit'))
-            if type(product_price)==str:
-                product_price=clean_price(product_price)
-            elif type(product_price)==float:
+            product_price = float(input('Please enter the price for the unit'))
+            if type(product_price) == str:
+                product_price = clean_price(product_price)
+            elif type(product_price) == float:
                 break
-            elif product_price<=0:
+            elif product_price <= 0:
                 raise Exception('Price cannot be lower than 0')
         except ValueError:
             print('Please enter a number not a letter')
-        
-            
+
         except Exception as e:
             print(e)
-        
 
     brand_name = input('Please enter a brand name')
-    products_in_db=session.query(Product).all()
-    brands_in_db=session.query(Brand).all()
-    for product in products_in_db:
-        if product.product_name==product_name:
-            product.product_name=product_name
-            product.product_quantity=product_quantity
-            product.product_price=product_price
-            product.date_updated=datetime.datetime.now()
-            for brand in brands_in_db:
-                if brand.brand_name==brand_name:
-                    product.brand_id=brand.brand_id
+    products_in_db = session.query(Product).all()
+    brands_in_db = session.query(Brand).all()
+    if product_name in products_in_db:
         
-                
-                
-                    
-        session.commit()
-    if product_name  not in products_in_db:
+        if product.product_name == product_name:
+            print('This product was found on the dataabase')
+            product.product_name = product_name
+            product.product_quantity = product_quantity
+            product.product_price = product_price
+            product.date_updated = datetime.datetime.now()
+        for brand in brands_in_db:
+            if brand.brand_name == brand_name:
+                brand_id=brand.brand_id
+            session.commit()
+       
+    
+
+
+    
+    if product_name not in products_in_db:
         print('The product is new to the system')
         for brand in brands_in_db:
-            if brand_name==brand.brand_name:
-                brand_id=brand.brand_id
-    new_product=Product(
+            if brand_name == brand.brand_name:
+                brand_id = brand.brand_id
+                break
+    new_product = Product(
         product_name=product_name,
         product_price=product_price,
         product_quantity=product_quantity,
         date_updated=datetime.datetime.now(),
         brand_id=brand_id
-        )
+    )
     session.add(new_product)
     session.commit()
-        
-            
-        
-       
-                    
-                
-            
-           
-            
+    
+
 
 def view_analysis():
     price_list = []
@@ -304,7 +298,7 @@ def create_backup():
             'brand_id'
 
 
-            ]
+        ]
         data = session.query(Product).all()
         inventory_backer = csv.DictWriter(
             backup_inventory, fieldnames=inventory_fields)
@@ -333,12 +327,9 @@ def create_backup():
             brand_backer.writerow(
 
                 {'brand_id': brand_datum.brand_id,
-                 'brand_name':brand_datum.brand_name
+                 'brand_name': brand_datum.brand_name
                  }
-                )
-            
-            
-           
+            )
 
 
 def app():
