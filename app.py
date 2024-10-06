@@ -220,11 +220,37 @@ def add_product():
             product.product_name=product_name
             product.product_quantity=product_quantity
             product.product_price=product_price
+            product.date_updated=datetime.datetime.now()
             for brand in brands_in_db:
                 if brand.brand_name==brand_name:
                     product.brand_id=brand.brand_id
+        
+                
+                
                     
         session.commit()
+    if product_name  not in products_in_db:
+        print('The product is new to the system')
+        for brand in brands_in_db:
+            if brand_name==brand.brand_name:
+                brand_id=brand.brand_id
+    new_product=Product(
+        product_name=product_name,
+        product_price=product_price,
+        product_quantity=product_quantity,
+        date_updated=datetime.datetime.now(),
+        brand_id=brand_id
+        )
+    session.add(new_product)
+    session.commit()
+        
+            
+        
+       
+                    
+                
+            
+           
             
 
 def view_analysis():
