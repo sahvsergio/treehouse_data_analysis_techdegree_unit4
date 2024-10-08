@@ -249,6 +249,18 @@ def add_product():
             product_in_db.date_updated = datetime.datetime.now()
             product_in_db.brand_id = brand_in_db.brand_id
             session.commit()
+    elif product_in_db is None:
+        new_product=Product(
+            product_name=product_name,
+            product_price=product_price,
+            product_quantity=product_quantity,
+            date_updated=datetime.datetime.now(),
+            brand_id= brand_in_db.brand_id
+            )
+        session.add(new_product)
+        session.commit()
+        
+            
   
         
     
