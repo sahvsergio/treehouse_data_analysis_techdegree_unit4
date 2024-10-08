@@ -249,7 +249,7 @@ def add_product():
             product_in_db.date_updated = datetime.datetime.now()
             product_in_db.brand_id = brand_in_db.brand_id
             session.commit()
-    if product_in is None:
+  
         
     
 
