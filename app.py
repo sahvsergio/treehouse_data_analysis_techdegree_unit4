@@ -27,12 +27,16 @@ def clean_quantity(qty_str):
         if type(qty_str) == str:
             if qty_str.isalpha():
                 raise Exception('This is not a number')
+            else:
+                return int(qty_str)
 
         else:
             return int(qty_str)
 
     except Exception as e:
         print(e)
+    else:
+        return int(qty_str)
 
 
 def clean_price(price_str):
@@ -82,27 +86,44 @@ def add_csv():
     with open('inventory.csv') as inventory_file:
         products = csv.DictReader(inventory_file)
         for product in products:
-            product_name = product['product_name']
-            product_price = clean_price(product['product_price'])
-            product_quantity = clean_quantity(product['product_quantity'])
-            _date_updated = clean_date(product['date_updated'])
-            product_brand = product['brand_name']
-            brand_in_db = session.query(Brand).\
-                all()
-            for brand in brand_in_db:
-                if brand.brand_name == product['brand_name']:
-                    product_brand_id = brand.brand_id
-                    new_product = Product(
-                        product_name=product_name,
-                        product_price=product_price,
-                        product_quantity=product_quantity,
-                        date_updated=_date_updated,
-                        brand_id=product_brand_id
-                    )
-                    session.add(new_product)
+            product_in_db=session.query(Product).filter(Product.product_name==product['product_name']).one_or_none()
+            brand_in_db = session.query(Brand).filter(Brand.brand_name==product['brand_name']).one_or_none()
+            if product_in_db is None:
+                product_name=product['product_name']
+                product_price=clean_price(product['product_price'])
+                product_quantity=clean_quantity(product['product_quantity'])
+                date_updated=clean_date(product['date_updated'])
+                new_product=Product(product_name=product_name,
+                                    product_quantity=product_quantity,
+                                    product_price=product_price,
+                                    date_updated=date_updated,
+                                    brand_id=brand_in_db.brand_id
+                                    )
+                session.add(new_product)
+            session.commit()
+            if product_in_db is not None:
+                if product_in_db.product_name == product['product_name']:
+                    date_in_db=product_in_db.date_updated
+                    csv_date=clean_date(product['date_updated'])
+                    if date_in_db > csv_date:
+                        print(' updating the database')
+
+                    elif date_in_db < csv_date:
+                        print('loading new data from source for product:',product_in_db.product_name)
+                        product_in_db.product_price=clean_price(
+                            product['product_price'])
+                        product_in_db.product_quantity=clean_quantity(
+                            product['product_quantity'])
+                        product_in_db.date_updated=clean_date(
+                            product['date_updated'])
+                        product_in_db.brand_id=brand_in_db.brand_id
+                        print(session.dirty)
+                        
 
                 session.commit()
-
+                
+                    
+ 
 # menu
 
 
@@ -210,38 +231,57 @@ def add_product():
             print(e)
 
     brand_name = input('Please enter a brand name')
-    products_in_db = session.query(Product).all()
-    brands_in_db = session.query(Brand).all()
+
+    
+    product_in_db = session.query(Product).filter(Product.product_name==product_name).one_or_none()
+    brand_in_db = session.query(Brand).\
+        filter(Brand.brand_name == brand_name).one_or_none()
+
+   
 
     #products with product name and brand already in the database
-    for product in products_in_db:
-        if product_name in products_in_db:
-            if product.product_name == product_name:
-                print('This product was found on the dataabase')
-                product.product_name = product_name
-                product.product_quantity = product_quantity
-                product.product_price = product_price
-                product.date_updated = datetime.datetime.now()
-            for brand in brands_in_db:
-                if brand.brand_name == brand_name:
-                    brand_id = brand.brand_id
-        session.commit()
+    if product_in_db is not None:
+            if product_in_db.product_name == product_name:
+                print('loading new data :')
+            product_in_db.product_name=product_name
+            product_in_db.product_price = product_price
+            product_in_db.product_quantity = product_quantity
+            product_in_db.date_updated = datetime.datetime.now()
+            product_in_db.brand_id = brand_in_db.brand_id
+            session.commit()
+    if product_in is None:
+        
+    
+
+    #product in the database, but the brand is unknown to the database
+    ## create the new brand
+   
+           
+           
+    
+    
+    
+    
+           
+         
+        
+  
+  
+            
+          
+            
+            
+                     
+        
+               
+             
+           
+            
+
+
+    
     #product  not on the database before and brand already in the database
-    for product in products_in_db:
-        if product_name not in products_in_db:
-            print('The product is new to the system')
-    new_product = Product(
-    product_name=product_name,
-    product_price=product_price,
-    product_quantity=product_quantity,
-    date_updated=datetime.datetime.now(),
-    )
-    session.add(new_product)
-    session.commit()
-    for brand in brands_in_db:
-        if brand.brand_name==brand_name:
-            new_product.brand_id = brand.brand_id
-    session.commit()
+    
   
 
 
